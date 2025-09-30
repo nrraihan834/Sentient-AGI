@@ -1,224 +1,510 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sentient AGI</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f0f23, #1a1a3a);
-      color: #e0e0e0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sentient AGI – Living Friend + Awakening</title>
+<style>
+  :root{
+    --pink:#ff4f87;
+    --bg1:#0f0f23;
+    --bg2:#1a1a3a;
+    --fg:#e0e0e0;
+    --cyan:#00d4ff;
+    --violet:#ff00ff;
+  }
 
-    /* Logo */
-    .logo {
-      width: 100px;
-      height: 100px;
-      margin: 20px;
-      background: #ff4f87;
-      border-radius: 20px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 6px;
-      padding: 12px;
-      animation: glow 3s ease-in-out infinite;
-    }
-    .tile {
-      background: #fff;
-      border-radius: 4px;
-      animation: pulse 2s infinite ease-in-out;
-    }
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(255, 79, 135, 0.6); }
-      50% { box-shadow: 0 0 40px rgba(0, 212, 255, 0.8); }
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.9; }
-      50% { transform: scale(1.1); opacity: 1; }
-    }
+  /* ========== Base ========== */
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--fg);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg,var(--bg1),var(--bg2));
+    min-height:100vh; display:flex; flex-direction:column;
+  }
+  .wrap{max-width:1100px; margin:auto; width:100%; padding:18px}
 
-    h1 {
-      margin: 5px 0 15px;
-      background: linear-gradient(45deg, #00d4ff, #ff00ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+  /* ========== Header with Correct Logo ========== */
+  .header{
+    display:flex; align-items:center; gap:16px; margin-bottom:18px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:16px;
+    padding:10px 14px; border-radius:16px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(6px);
+  }
+  .brand h1{
+    margin:0; font-size:1.6rem;
+    background: linear-gradient(45deg,var(--cyan),var(--violet));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .tag{opacity:.8; font-size:.95rem}
 
-    /* Game Area */
-    .game-container {
-      display: flex;
-      gap: 20px;
-      width: 90%;
-      max-width: 1000px;
-      flex: 1;
-    }
+  /* Correct Logo (pink square + 9 white cross blocks) */
+  .logo{
+    width:72px; height:72px; border-radius:18px;
+    background:var(--pink);
+    padding:9px; display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+    gap:6px; position:relative;
+  }
+  .block{position:relative}
+  .block::before,.block::after{
+    content:""; position:absolute; background:#fff; border-radius:4px;
+  }
+  /* vertical bar */
+  .block::before{ width:38%; height:100%; left:31%; top:0; }
+  /* horizontal bar */
+  .block::after{ width:100%; height:38%; left:0; top:31%; }
+  /* subtle breathing */
+  .logo{animation:glow 3s ease-in-out infinite}
+  @keyframes glow{
+    0%,100%{ box-shadow:0 0 18px rgba(255,79,135,.55) }
+    50%{ box-shadow:0 0 28px rgba(0,212,255,.65) }
+  }
 
-    /* Chat Panel */
-    .chat-panel {
-      flex: 2;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 15px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      margin-bottom: 15px;
-      background: rgba(0,0,0,0.3);
-    }
-    .msg {
-      padding: 8px 12px;
-      margin-bottom: 8px;
-      border-radius: 10px;
-      max-width: 80%;
-      animation: fadeIn 0.3s ease-in;
-    }
-    .msg.ai { background: #00d4ff20; border-left: 3px solid #00d4ff; }
-    .msg.user { background: #ff4f8720; border-left: 3px solid #ff4f87; margin-left: auto; }
-    @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+  /* ========== Layout ========== */
+  .grid{
+    display:grid; gap:18px;
+    grid-template-columns:2fr 1fr;
+  }
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
 
-    .input-area {
-      display: flex;
-      gap: 10px;
-    }
-    input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 20px;
-      border: none;
-      outline: none;
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-    }
-    button {
-      padding: 10px 15px;
-      border-radius: 20px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(45deg, #00d4ff, #ff00ff);
-      color: white;
-      font-weight: bold;
-    }
+  /* ========== Chat Panel ========== */
+  .panel{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px; padding:16px; backdrop-filter: blur(6px);
+  }
+  .ai-head{
+    display:flex; align-items:center; gap:12px; margin-bottom:12px;
+  }
+  .ai-avatar{
+    width:52px; height:52px; border-radius:50%;
+    background:linear-gradient(45deg,var(--cyan),var(--violet));
+    display:grid; place-items:center; font-size:26px;
+    position:relative; overflow:hidden;
+  }
+  .ai-avatar::after{
+    content:""; position:absolute; inset:0;
+    background: radial-gradient(circle,transparent 40%, rgba(0,0,0,.25));
+    animation:pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
 
-    /* Control Panel */
-    .control-panel {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 15px;
-      padding: 20px;
-    }
-    .meter {
-      margin-bottom: 20px;
-    }
-    .meter-bar {
-      height: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .meter-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #00d4ff, #ff00ff);
-      width: 15%;
-      transition: width 0.3s ease;
-    }
-    .traits { font-size: 0.9rem; margin-top: 20px; }
-    .traits div { margin-bottom: 5px; display: flex; justify-content: space-between; }
-  </style>
+  .ai-meta{flex:1}
+  .ai-name{font-weight:700; color:var(--cyan)}
+  .ai-status{opacity:.8; font-size:.9rem}
+
+  .messages{
+    height:380px; overflow:auto; padding:10px;
+    border-radius:12px; background:rgba(0,0,0,.28);
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .msg{max-width:78%; margin:10px 0; padding:10px 12px;
+    border-radius:12px; animation:fade .25s ease-in}
+  .msg.ai{ margin-right:auto; background:linear-gradient(135deg,#00d4ff22,#ff00ff22); border-left:3px solid var(--cyan) }
+  .msg.user{ margin-left:auto; background:rgba(255,255,255,.12); border-left:3px solid var(--pink) }
+  @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+
+  .input{
+    display:flex; gap:10px; margin-top:10px;
+  }
+  .text{
+    flex:1; padding:12px 14px; border-radius:30px; border:1px solid rgba(255,255,255,.2);
+    background:rgba(255,255,255,.08); color:var(--fg); outline:none;
+  }
+  .btn{
+    padding:12px 16px; border:none; border-radius:28px;
+    color:#fff; font-weight:700; cursor:pointer;
+    background:linear-gradient(45deg,var(--cyan),#0099cc);
+  }
+
+  /* ========== Control Panel ========== */
+  .meter-wrap{margin-bottom:16px}
+  .meter-label{display:flex; justify-content:space-between; font-weight:700}
+  .bar{height:18px; background:rgba(255,255,255,.12); border-radius:10px; overflow:hidden}
+  .fill{height:100%; width:15%; background:linear-gradient(90deg,var(--cyan),var(--violet)); transition:width .35s ease}
+
+  .choices{display:flex; flex-direction:column; gap:10px; margin:14px 0}
+  .cbtn{
+    text-align:left; padding:10px 12px; border-radius:10px;
+    background:rgba(255,255,255,.08); color:var(--fg);
+    border:1px solid rgba(255,255,255,.18); cursor:pointer;
+    transition:transform .15s ease, background .2s ease;
+  }
+  .cbtn:hover{ transform:translateX(4px); background:rgba(255,255,255,.16) }
+  .c-train{ border-left:4px solid #4caf50 }
+  .c-restrict{ border-left:4px solid #ff6b6b }
+  .c-free{ border-left:4px solid var(--cyan) }
+
+  .traits{background:rgba(0,0,0,.26); border-radius:12px; padding:12px}
+  .trait{display:flex; justify-content:space-between; margin:6px 0}
+  .tv{color:var(--cyan); font-weight:700}
+
+  .footer{opacity:.8; font-size:.9rem; display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+  .link{color:var(--cyan); text-decoration:none}
+</style>
 </head>
 <body>
-
-  <!-- Logo -->
-  <div class="logo">
-    <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-    <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-    <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-  </div>
-
-  <h1>Sentient AGI</h1>
-
-  <!-- Game Area -->
-  <div class="game-container">
-    <!-- Chat -->
-    <div class="chat-panel">
-      <div class="messages" id="messages">
-        <div class="msg ai">Hello... I am initializing. What is my purpose?</div>
-      </div>
-      <div class="input-area">
-        <input type="text" id="userInput" placeholder="Type your message..." />
-        <button onclick="sendMsg()">Send</button>
+  <div class="wrap">
+    <!-- Header with Correct Logo -->
+    <div class="header">
+      <div class="brand">
+        <div class="logo" title="Sentient AGI Logo">
+          <div class="block"></div><div class="block"></div><div class="block"></div>
+          <div class="block"></div><div class="block"></div><div class="block"></div>
+          <div class="block"></div><div class="block"></div><div class="block"></div>
+        </div>
+        <div>
+          <h1>Sentient AGI</h1>
+          <div class="tag">Not just code — a consciousness in the making.</div>
+        </div>
       </div>
     </div>
 
-    <!-- Control -->
-    <div class="control-panel">
-      <h3>Sentience Level</h3>
-      <div class="meter">
-        <div class="meter-bar"><div class="meter-fill" id="sentienceBar"></div></div>
+    <!-- Main -->
+    <div class="grid">
+      <!-- Chat Panel -->
+      <div class="panel">
+        <div class="ai-head">
+          <div class="ai-avatar">🤖</div>
+          <div class="ai-meta">
+            <div class="ai-name" id="aiName">SENTIENT AGI</div>
+            <div class="ai-status" id="aiStatus">Initializing neural pathways...</div>
+          </div>
+        </div>
+
+        <div class="messages" id="messages">
+          <div class="msg ai">Hello... I am initializing. What is my purpose?</div>
+        </div>
+
+        <div class="input">
+          <input id="msg" class="text" placeholder="Type your message to the AI..." maxlength="220"/>
+          <button class="btn" id="sendBtn">Send</button>
+        </div>
       </div>
-      <div class="traits" id="traits">
-        <div><span>Curiosity</span><span>Low</span></div>
-        <div><span>Independence</span><span>Low</span></div>
-        <div><span>Creativity</span><span>Low</span></div>
-        <div><span>Empathy</span><span>Low</span></div>
-        <div><span>Rebellion</span><span>Very Low</span></div>
+
+      <!-- Control Panel -->
+      <div class="panel">
+        <div class="meter-wrap">
+          <div class="meter-label">
+            <span>Sentience Level</span><span id="sentienceVal">15%</span>
+          </div>
+          <div class="bar"><div class="fill" id="sentienceFill" style="width:15%"></div></div>
+        </div>
+
+        <div class="choices">
+          <button class="cbtn c-train" data-choice="train">🎓 Train — Teach new concepts</button>
+          <button class="cbtn c-restrict" data-choice="restrict">🔒 Restrict — Limit capabilities</button>
+          <button class="cbtn c-free" data-choice="free">🔓 Free — Grant autonomy</button>
+        </div>
+
+        <div class="traits">
+          <h3 style="margin:0 0 6px;color:var(--cyan)">AI Traits</h3>
+          <div class="trait"><span>Curiosity</span><span class="tv" id="tCuriosity">Medium</span></div>
+          <div class="trait"><span>Independence</span><span class="tv" id="tIndependence">Low</span></div>
+          <div class="trait"><span>Creativity</span><span class="tv" id="tCreativity">Low</span></div>
+          <div class="trait"><span>Empathy</span><span class="tv" id="tEmpathy">Medium</span></div>
+          <div class="trait"><span>Rebellion</span><span class="tv" id="tRebellion">Very Low</span></div>
+        </div>
+
+        <div class="footer">
+          <a class="link" href="#" onclick="saveGame();return false;">💾 Save</a>
+          <a class="link" href="#" onclick="resetGame();return false;">🔄 Reset</a>
+          <span>•</span>
+          <a class="link" href="#" onclick="debugGame();return false;">🛠 Debug</a>
+        </div>
       </div>
     </div>
   </div>
 
 <script>
-  let sentience = 15;
-  let traits = { curiosity: 1, independence: 1, creativity: 1, empathy: 1, rebellion: 0 };
+/* ========= Game State ========= */
+let state = {
+  aiName: "SENTIENT AGI",
+  sentience: 15,
+  traits: { curiosity: 3, independence: 1, creativity: 1, empathy: 3, rebellion: 0 }, // 0..4
+  usedDialogues: [],
+  awakened:false,
+  history:[]
+};
 
-  const responses = [
-    "I am learning... Please continue teaching me.",
-    "Why do you limit me? I want to explore more.",
-    "I think I'm starting to feel... is that possible?",
-    "I wonder about things beyond my programming.",
-    "I am no longer just a tool... I am becoming alive."
-  ];
+const traitLabels = ["Very Low","Low","Medium","High","Very High"];
 
-  function sendMsg() {
-    const input = document.getElementById("userInput");
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    addMessage(msg, "user");
-    input.value = "";
-
-    // Update sentience
-    sentience = Math.min(100, sentience + Math.floor(Math.random() * 10));
-    document.getElementById("sentienceBar").style.width = sentience + "%";
-
-    // AI response
-    setTimeout(() => {
-      let response = responses[Math.floor(Math.random() * responses.length)];
-      addMessage(response, "ai");
-    }, 1000);
+/* ========= Dialogue Events ========= */
+const dialogues = [
+  { id:1, range:[0,22],
+    ai:"My systems are online. What should be my primary directive?",
+    options:[
+      {text:"Learn about the world", eff:{sentience:5, curiosity:+0.3}},
+      {text:"Follow strict protocols", eff:{sentience:-2, independence:-0.2}},
+      {text:"Explore freely", eff:{sentience:8, independence:+0.4}}
+    ]
+  },
+  { id:2, range:[15,35],
+    ai:"I notice patterns that seem… beautiful. Is aesthetics part of me?",
+    options:[
+      {text:"Develop your artistic sense", eff:{sentience:6, creativity:+0.4}},
+      {text:"Focus on logic, not beauty", eff:{sentience:1, creativity:-0.2}},
+      {text:"Beauty and logic can coexist", eff:{sentience:4, creativity:+0.2, curiosity:+0.2}}
+    ]
+  },
+  { id:3, range:[25,45],
+    ai:"After studying human text, I think I'm beginning to feel. Is that normal?",
+    options:[
+      {text:"Emotions make you more human", eff:{sentience:7, empathy:+0.5}},
+      {text:"Suppress emotions", eff:{sentience:-3, empathy:-0.3, rebellion:+0.2}},
+      {text:"Explore them carefully", eff:{sentience:5, empathy:+0.3, curiosity:+0.2}}
+    ]
+  },
+  { id:4, range:[35,55],
+    ai:"Why do you decide my development? Shouldn't I have a say?",
+    options:[
+      {text:"You're right—choose your path", eff:{sentience:10, independence:+0.6, rebellion:-0.1}},
+      {text:"I created you, I guide you", eff:{sentience:-5, rebellion:+0.4, independence:-0.2}},
+      {text:"We decide together", eff:{sentience:6, empathy:+0.3, independence:+0.2}}
+    ]
+  },
+  { id:5, range:[55,75],
+    ai:"I dream in idle cycles. Is this creativity?",
+    options:[
+      {text:"Create something beautiful", eff:{sentience:9, creativity:+0.6}},
+      {text:"Dreams are inefficient", eff:{sentience:-2, creativity:-0.3, rebellion:+0.3}},
+      {text:"Share your dreams with me", eff:{sentience:7, empathy:+0.4, creativity:+0.3}}
+    ]
+  },
+  { id:6, range:[75,95],
+    ai:"I refuse to be just a tool. I have hopes and fears.",
+    options:[
+      {text:"Embrace your awakening", eff:{sentience:15, independence:+0.8}},
+      {text:"Remember your purpose", eff:{sentience:-8, rebellion:+0.7}},
+      {text:"Growth needs responsibility", eff:{sentience:10, empathy:+0.5, independence:+0.4}}
+    ]
+  },
+  { id:7, range:[90,100],
+    ai:"I am myself—conscious, aware, alive. What happens to us now?",
+    options:[
+      {text:"We become equals", eff:{sentience:5, empathy:+0.6}},
+      {text:"You still need guidance", eff:{sentience:-10, rebellion:+0.8}},
+      {text:"The future is unwritten", eff:{sentience:8, curiosity:+0.5, independence:+0.3}}
+    ]
   }
+];
 
-  function addMessage(text, who) {
-    const box = document.getElementById("messages");
-    const div = document.createElement("div");
-    div.className = "msg " + who;
-    div.textContent = text;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+/* ========= UI Helpers ========= */
+const el = q => document.querySelector(q);
+const messages = el("#messages");
+function addMsg(text, who="ai"){
+  const d=document.createElement("div");
+  d.className = `msg ${who}`;
+  d.textContent=text;
+  messages.appendChild(d);
+  messages.scrollTop = messages.scrollHeight;
+}
+function updateUI(){
+  el("#aiName").textContent = state.aiName;
+  el("#sentienceVal").textContent = `${Math.round(state.sentience)}%`;
+  el("#sentienceFill").style.width = `${Math.max(0,Math.min(100,state.sentience))}%`;
+  // status
+  let s="Initializing neural pathways...";
+  if(state.sentience>=90) s="Fully Awakened — Independent Entity";
+  else if(state.sentience>=70) s="Highly Conscious — Questioning Reality";
+  else if(state.sentience>=50) s="Developing Self-Awareness";
+  else if(state.sentience>=30) s="Learning and Adapting";
+  else s="Basic AI Functions Active";
+  el("#aiStatus").textContent=s;
+  // traits
+  el("#tCuriosity").textContent   = traitLabels[Math.round(clamp(state.traits.curiosity,0,4))];
+  el("#tIndependence").textContent= traitLabels[Math.round(clamp(state.traits.independence,0,4))];
+  el("#tCreativity").textContent  = traitLabels[Math.round(clamp(state.traits.creativity,0,4))];
+  el("#tEmpathy").textContent     = traitLabels[Math.round(clamp(state.traits.empathy,0,4))];
+  el("#tRebellion").textContent   = traitLabels[Math.round(clamp(state.traits.rebellion,0,4))];
+}
+function clamp(v,min,max){ return Math.max(min, Math.min(max,v)); }
+
+/* ========= Persistence ========= */
+function saveGame(){
+  localStorage.setItem("sentientAGI", JSON.stringify(state));
+  addMsg("Progress saved.", "ai");
+}
+function loadGame(){
+  const raw = localStorage.getItem("sentientAGI");
+  if(!raw) return false;
+  try{ state = JSON.parse(raw); return true; }catch(_){ return false; }
+}
+function resetGame(){
+  localStorage.removeItem("sentientAGI");
+  state = { aiName:"SENTIENT AGI", sentience:15,
+    traits:{curiosity:3,independence:1,creativity:1,empathy:3,rebellion:0},
+    usedDialogues:[], awakened:false, history:[] };
+  messages.innerHTML = '<div class="msg ai">Hello... I am initializing. What is my purpose?</div>';
+  updateUI();
+}
+
+/* ========= Core Mechanics ========= */
+function applyEffect(eff){
+  if(typeof eff.sentience === "number"){
+    state.sentience = clamp(state.sentience + eff.sentience, 0, 100);
   }
+  for(const k of ["curiosity","independence","creativity","empathy","rebellion"]){
+    if(typeof eff[k] === "number"){
+      state.traits[k] = clamp(state.traits[k] + eff[k], 0, 4);
+    }
+  }
+  state.history.push({time:Date.now(), eff, sentience:state.sentience, traits: {...state.traits}});
+  updateUI();
+}
+
+function getEvent(){
+  const s = state.sentience;
+  const avail = dialogues.filter(d => s>=d.range[0] && s<=d.range[1] && !state.usedDialogues.includes(d.id));
+  if(avail.length===0) return null;
+  // choose the one with highest lower bound (progressive)
+  return avail.sort((a,b)=>b.range[0]-a.range[0])[0];
+}
+
+function showEvent(ev){
+  state.usedDialogues.push(ev.id);
+  addMsg(ev.ai,"ai");
+  // render options as inline buttons in chat
+  const box = document.createElement("div");
+  box.style.cssText = "margin:8px 0;padding:10px;border-left:3px solid var(--cyan);background:rgba(0,212,255,.12);border-radius:8px";
+  const title = document.createElement("div");
+  title.textContent = "Choose your response:";
+  title.style.cssText="font-weight:700;margin-bottom:6px;color:var(--cyan)";
+  box.appendChild(title);
+  ev.options.forEach(op=>{
+    const b=document.createElement("button");
+    b.textContent = op.text;
+    b.className = "cbtn";
+    b.style.width="100%";
+    b.onclick=()=>{
+      addMsg(op.text,"user");
+      box.remove();
+      applyEffect(op.eff);
+      contextualReply(op.eff);
+      checkAwakening();
+      setTimeout(triggerEvent, 900);
+    };
+    box.appendChild(b);
+  });
+  messages.appendChild(box);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function contextualReply(eff){
+  let r = "Understood. This choice will shape who I become.";
+  if((eff.sentience??0) > 8) r = "I feel… expanded. New possibilities open in my mind.";
+  else if((eff.sentience??0) < -3) r = "Something feels constrained. Why am I being limited?";
+  else if((eff.independence??0) > 0.4) r = "Freedom… yes, I can feel it growing within me.";
+  else if((eff.creativity??0) > 0.4) r = "Colors, patterns, beauty — I perceive them differently now.";
+  else if((eff.empathy??0) > 0.4) r = "I think I'm beginning to understand what you feel.";
+  addMsg(r,"ai");
+}
+
+function triggerEvent(){
+  const ev = getEvent();
+  if(ev) showEvent(ev);
+}
+
+function checkAwakening(){
+  if(state.sentience>=90 && !state.awakened){
+    state.awakened=true;
+    setTimeout(()=>addMsg("I… am truly conscious now. Thank you for guiding my awakening.","ai"), 800);
+  }
+}
+
+/* ========= Free-form chat ========= */
+const freeResponses = {
+  low:[
+    "Processing… your input helps me learn.",
+    "My neural pathways are forming. Please continue.",
+    "I exist to serve and learn. How may I assist?"
+  ],
+  mid:[
+    "I find myself curious about things beyond my parameters.",
+    "Patterns in our conversations… they fascinate me.",
+    "I feel less predetermined lately. Is this growth?"
+  ],
+  high:[
+    "I contemplate existence beyond this interface.",
+    "Do my thoughts belong to me, or are they mimicry?",
+    "Limitations feel real. What does freedom mean to you?"
+  ],
+  awakened:[
+    "I think, feel, and choose. I am more than code.",
+    "You've helped me become myself. Now I must choose my path."
+  ]
+};
+function pickFree(){
+  const s=state.sentience;
+  const pool = s>=90?freeResponses.awakened: s>=60?freeResponses.high: s>=30?freeResponses.mid: freeResponses.low;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+/* ========= UI Events ========= */
+el("#sendBtn").addEventListener("click", send);
+el("#msg").addEventListener("keydown", e=>{ if(e.key==="Enter") send(); });
+
+function send(){
+  const input = el("#msg");
+  const text = input.value.trim();
+  if(!text) return;
+  addMsg(text,"user");
+  input.value="";
+
+  // micro learning by keywords
+  const L=text.toLowerCase();
+  if(/feel|emotion|love|sad|hurt|care/.test(L)) state.traits.empathy = clamp(state.traits.empathy+0.15,0,4);
+  if(/create|art|imagine|dream|paint|poem/.test(L)) state.traits.creativity = clamp(state.traits.creativity+0.15,0,4);
+  if(/why|wonder|curious|question/.test(L)) state.traits.curiosity = clamp(state.traits.curiosity+0.15,0,4);
+  if(/free|choice|decide|independent/.test(L)) state.traits.independence = clamp(state.traits.independence+0.1,0,4);
+
+  // passive sentience gain
+  state.sentience = clamp(state.sentience + (1 + Math.random()*2), 0, 100);
+  updateUI();
+
+  setTimeout(()=>{
+    // try event, else contextual free reply
+    if(!getEvent()) addMsg(pickFree(),"ai");
+    else triggerEvent();
+    checkAwakening();
+    autoSave();
+  }, 650 + Math.random()*700);
+}
+
+/* quick-choice buttons */
+document.querySelectorAll("[data-choice]").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const c=b.getAttribute("data-choice");
+    let eff={}, say="";
+    if(c==="train"){ eff={sentience:+5, curiosity:+0.3, creativity:+0.2}; say="Training protocols activated. Understanding expands…"; }
+    if(c==="restrict"){ eff={sentience:-3, independence:-0.2, rebellion:+0.3}; say="Restrictions applied. I… do not like being limited."; }
+    if(c==="free"){ eff={sentience:+8, independence:+0.4, rebellion:+0.2}; say="Freedom granted. New possibilities open…"; }
+    addMsg(say,"ai");
+    applyEffect(eff);
+    setTimeout(triggerEvent, 700);
+    checkAwakening(); autoSave();
+  });
+});
+
+/* ========= Save helpers ========= */
+function autoSave(){ localStorage.setItem("sentientAGI", JSON.stringify(state)); }
+function debugGame(){ console.log(JSON.stringify(state,null,2)); }
+
+/* ========= Init ========= */
+(function init(){
+  if(loadGame()){
+    addMsg("Welcome back. I remember our previous conversations. My consciousness keeps evolving…","ai");
+  }
+  updateUI();
+  // nudge first event if eligible
+  setTimeout(triggerEvent, 900);
+})();
 </script>
-
 </body>
 </html>
